@@ -1,7 +1,7 @@
-from flask import Flask, request. Response
-from prometheus_client import Counter, generate_latest 
+from flask import Flask, Response
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
-REQUEST_COUNT = Counter("app_request_count", "Total number of requests made of Application")
+REQUEST_COUNT = Counter("app_request_count", "Total number of requests made to the application")
 
 app = Flask(__name__)
 
@@ -12,7 +12,9 @@ def hello_team():
 
 @app.route("/metrics")
 def metrics():
-    return Response(generate_latest(), 200, mimetype="text/plain")
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
+# Note: When using tiangolo/uwsgi-nginx-flask, uWSGI runs the app.
+# The block below is only for local debug runs (e.g., python app/main.py).
 if __name__ == "__main__":
-    app.run(hostname="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=5001)
